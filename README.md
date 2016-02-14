@@ -1,5 +1,7 @@
-# The tsfeatures package (Time Series Feature Extraction)
+# tsfeatures
 [![Pending Pull-Requests](http://githubbadges.herokuapp.com/bsouhaib/M4comp/pulls.svg?style=flat)](https://github.com/bsouhaib/tsfeatures/pulls)
+
+The R package *tsfeatures* provides methods for extracting various features from time series data.
 
 # Installation
 The **stable** version on R CRAN is coming soon.
