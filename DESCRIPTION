@@ -1,0 +1,16 @@
+Package: tsfeatures
+Title: Time Series Feature Extraction
+Version: 0.0.1
+Authors@R: c(
+    person("Souhaib", "Ben Taieb", email = "souhaib.bentaieb@monash.edu", role = c("aut", "cre")),
+    person("Earo", "Wang", email = "earo.wang@gmail.com", role = "aut"),
+    person("Rob", "Hyndman", email = "Rob.Hyndman@monash.edu", role = "aut"))
+Description: Methods for extracting various features from time series data.
+Depends: R (>= 3.2.3)
+Imports: ForeCA,
+		 mgcv,
+		 RcppRoll (>= 0.2.2)
+License: GPL (>= 2)
+LazyData: true
+URL: https://github.com/bsouhaib/tsfeatures
+BugReports: https://github.com/bsouhaib/tsfeatures/issues
