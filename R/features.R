@@ -111,7 +111,7 @@ VarTS <- function(x, tspx) {
   freq <- tspx[3]
   contx <- try(na.contiguous(x), silent = TRUE)
   len.contx <- length(contx)
-  if (length(contx) < 2 * freq || class(contx) == "try-error") {
+  if (length(contx) <= 2 * freq || class(contx) == "try-error") {
     trend <- linearity <- curvature <- season <- spike <- peak <- trough <- NA
   } else {
     if (freq > 1L) {
