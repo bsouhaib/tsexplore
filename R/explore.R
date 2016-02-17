@@ -32,7 +32,7 @@ tabfeatures <- function(tslist, features = c("entropy", "FoAcf", "trend", "seaso
 	return(mat)	
 }
 
-visualize <- function(x, dimred = c("PCA", "robPCA", "custom"), colouring = c("features", "clustering", "custom"), varx = "PC1", vary = "PC2", colours = NULL, maintitle = NULL){
+visualize <- function(x, dimred = c("PCA", "robPCA", "custom"), colouring = c("features", "clustering", "custom"), varx = NULL, vary = NULL, colours = NULL, k = NULL, maintitle = NULL, plot.arrow = TRUE){
 	match.arg(dimred)
 	match.arg(colouring)
 	
@@ -40,6 +40,9 @@ visualize <- function(x, dimred = c("PCA", "robPCA", "custom"), colouring = c("f
 		rownames(x) <- seq(nrow(x))
 	}
 	
+	xlabel <- varx
+	ylabel <- vary
+
 	if(dimred %in%c("PCA", "robPCA")){
 		if(dimred == "PCA"){
 			pca <- pcaPP::PCAproj(x, k = 2, scale = sd, center = mean)
@@ -49,6 +52,8 @@ visualize <- function(x, dimred = c("PCA", "robPCA", "custom"), colouring = c("f
 		}
 		X <- pca$x[, 1]
 		Y <- pca$x[, 2]
+		
+		varexp <- 100 * pca$sdev^2/sum(pca$sdev^2)
 		
 		# LOADINGS ARROWS
 		#x <- "PC1"; y <- "PC2";
@@ -62,10 +67,13 @@ visualize <- function(x, dimred = c("PCA", "robPCA", "custom"), colouring = c("f
 		                      v1 = .5 * mult * (get("PC1")),
 		                      v2 = .5 * mult * (get("PC2")))
 
-		                      
+		  xlabel <- paste("PC1 (", format(varexp[1], digits = 3),"% explained var.)", sep = "")
+		  ylabel <- paste("PC2 (", format(varexp[1], digits = 3),"% explained var.)", sep = "")   
+							                
 	}else if(dimred == "custom"){
 		X <- x[, varx]
 		Y <- x[, vary]
+		
 	}
 
 	if(colouring == "features"){
@@ -76,39 +84,40 @@ visualize <- function(x, dimred = c("PCA", "robPCA", "custom"), colouring = c("f
 			print(j)
 			d <- data.frame(X, Y, value = x[, j])
 			listplots[[j]] <- ggplot(data = d, mapping = aes(x = X, y = Y)) +
-	     	geom_point(aes(colour = value), shape = 19) +
-	     	ggtitle(colnames(x)[j]) +
-	     	theme(text = element_text(size = 15)) +
-	     	scale_colour_gradientn(colours = mycols) +
-	     	xlab(varx) +
-			ylab(vary) 
+	     		geom_point(aes(colour = value), shape = 19) +
+	     		ggtitle(colnames(x)[j]) +
+	     		theme(text = element_text(size = 15)) +
+	     		scale_colour_gradientn(colours = mycols) +
+	     		xlab(xlabel) +
+				ylab(ylabel) 
 			
-			if(dimred %in% c("PCA", "robPCA")){
-				listplots[[j]] <- listplots[[j]] + geom_segment(data = datapc,
-                   aes(x = 0, y = 0, xend = v1, yend = v2),
-                   arrow = arrow(length = unit(1/2, 'picas')), 
-                   color = "red") +
-				geom_text(data = datapc, aes(label = varnames, x = 1.4 * v1, y = 1.4 * v2), color = 'darkred', size = 3)
+			if(dimred %in% c("PCA", "robPCA") && plot.arrow){
+				listplots[[j]] <- listplots[[j]] + geom_segment(data = datapc, aes(x = 0, y = 0, xend = v1, yend = v2), arrow = arrow(length = unit(1/2, 'picas')), color = "red") +
+					geom_text(data = datapc, aes(label = varnames, x = 1.4 * v1, y = 1.4 * v2), color = 'darkred', size = 3)
 			}
 
 		}
 	}else{
 		
 		if(colouring == "clustering"){
-			nb.clusters <- 4
-			res <- kmeans(x, centers = nb.clusters)
+			res <- kmeans(x, centers = k)
 			colours <- res$cluster
 			maintitle <- "Clustering-based (in feature space) colouring"
 		}
 		
 		d <- data.frame(X, Y, value = factor(colours))
-		listplots <- list(ggplot(data = d, mapping = aes(x = X, y = Y)) +
+		listplots <- ggplot(data = d, mapping = aes(x = X, y = Y)) +
 			geom_point(aes(colour = value), shape = 19) +
 			ggtitle(maintitle) +
-		 	xlab(varx) +
-			ylab(vary) 
+		 	xlab(xlabel) +
+			ylab(ylabel) 
 			#+theme(legend.text=element_text(size=2))
-			) 
+			
+		if(dimred %in% c("PCA", "robPCA") && plot.arrow){
+				listplots <- listplots + geom_segment(data = datapc, aes(x = 0, y = 0, xend = v1, yend = v2), arrow = arrow(length = unit(1/2, 'picas')), color = "red") +
+					geom_text(data = datapc, aes(label = varnames, x = 1.4 * v1, y = 1.4 * v2), color = 'darkred', size = 3)
+		}
+		listplots <- list(listplots)
 		
 	}
 
