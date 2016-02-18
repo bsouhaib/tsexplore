@@ -57,6 +57,9 @@ visualize <- function(x, dimred = c("PCA", "robPCA", "custom"), colouring = c("f
 		
 		# LOADINGS ARROWS
 		#x <- "PC1"; y <- "PC2";
+		#browser()
+		rownames(pca$rotation) <- seq(nrow(pca$rotation))
+		
 		data <- data.frame(obsnames=row.names(pca$x), pca$x)
 		datapc <- data.frame(varnames=rownames(pca$rotation), pca$rotation)
 		  mult <- min(
