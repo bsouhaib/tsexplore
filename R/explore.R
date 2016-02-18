@@ -103,6 +103,7 @@ visualize <- function(x, dimred = c("PCA", "robPCA", "custom"), colouring = c("f
 	}else{
 		
 		if(colouring == "clustering"){
+			
 			res <- kmeans(x, centers = k)
 			colours <- res$cluster
 			maintitle <- "Clustering-based (in feature space) colouring"
