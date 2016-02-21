@@ -32,98 +32,126 @@ tabfeatures <- function(tslist, features = c("entropy", "FoAcf", "trend", "seaso
 	return(mat)	
 }
 
-visualize <- function(x, dimred = c("PCA", "robPCA", "custom"), colouring = c("features", "clustering", "custom"), varx = NULL, vary = NULL, colours = NULL, k = NULL, maintitle = NULL, plot.arrow = TRUE){
-	match.arg(dimred)
-	match.arg(colouring)
-	
-	if(is.null(rownames(x))){
-		rownames(x) <- seq(nrow(x))
+reducedim <- function(DT, method = c("PCA", "robPCA", "custom"), variables = NULL, retpca = FALSE){
+	match.arg(method)
+	if(is.null(rownames(DT))){
+		rownames(DT) <- 1:nrow(DT)
+	}
+	if(method == "custom" && (is.null(variables))){
+		stop("variables must be specified for the custom method")
+	}
+	if(retpca && !grepl("PCA", method)){
+		stop("retpca = TRUE is only possible with PCA methods")
 	}
 	
-	xlabel <- varx
-	ylabel <- vary
-
-	if(dimred %in%c("PCA", "robPCA")){
-		if(dimred == "PCA"){
-			pca <- pcaPP::PCAproj(x, k = 2, scale = sd, center = mean)
-			pca$x <- pca$scores
-		}else if(dimred == "robPCA"){
-			pca <- prcomp(x, center = TRUE, scale = TRUE)
+	if(grepl("PCA", method)){
+		if(method == "robPCA"){
+			pca <- pcaPP::PCAproj(DT, k = 2, scale = sd, center = mean) # loadings and scores
+			pca$loadings <- unclass(pca$loadings)
+			
+		}else if(method == "PCA"){
+			pca <- prcomp(DT, center = TRUE, scale = TRUE) # x and rotation
+			pca$loadings <- pca$rotation
+			pca$scores <- pca$x
 		}
-		X <- pca$x[, 1]
-		Y <- pca$x[, 2]
+		colnames(pca$scores) <- paste("PC", seq(ncol(pca$scores)), sep = "")
+		colnames(pca$loadings) <- paste("PC", seq(ncol(pca$loadings)), sep = "")
+		reducedDT <- pca$scores[, 1:2]
+							                
+	}else if(method == "custom"){
+		reducedDT <- DT[, variables]
+	}
+	if(retpca){
+		results <- list(DT = DT, reducedDT = reducedDT, method = method, pca = pca)
+	}else{
+		results <- list(DT = DT, reducedDT = reducedDT, method = method)
+	}
+	return(results)
+}
+
+getplot <- function(obj, colouring = c("features", "clustering", "custom"), colours = NULL, k = NULL, pca.plotarrow = TRUE){
+
+	xlabel <- colnames(obj$reducedDT)[1]
+	ylabel <- colnames(obj$reducedDT)[2]
+	
+	is.pca <- grepl("PCA", obj$method)
+
+	if(is.pca){
+		pca <- obj$pca
 		
 		varexp <- 100 * pca$sdev^2/sum(pca$sdev^2)
+		xlabel <- paste("PC1 (", format(varexp[1], digits = 3),"% explained var.)", sep = "")
+		ylabel <- paste("PC2 (", format(varexp[2], digits = 3),"% explained var.)", sep = "") 
 		
-		# LOADINGS ARROWS
-		#x <- "PC1"; y <- "PC2";
-		#browser()
-		rownames(pca$rotation) <- seq(nrow(pca$rotation))
-		
-		data <- data.frame(obsnames=row.names(pca$x), pca$x)
-		datapc <- data.frame(varnames=rownames(pca$rotation), pca$rotation)
-		  mult <- min(
-		    (max(data[, "PC2"]) - min(data[,"PC2"])/(max(datapc[,"PC2"])-min(datapc[,"PC2"]))),
-		    (max(data[, "PC1"]) - min(data[,"PC1"])/(max(datapc[,"PC1"])-min(datapc[,"PC1"])))
-		  )
-		  datapc <- transform(datapc,
-		                      v1 = .5 * mult * (get("PC1")),
-		                      v2 = .5 * mult * (get("PC2")))
-
-		  xlabel <- paste("PC1 (", format(varexp[1], digits = 3),"% explained var.)", sep = "")
-		  ylabel <- paste("PC2 (", format(varexp[1], digits = 3),"% explained var.)", sep = "")   
-							                
-	}else if(dimred == "custom"){
-		X <- x[, varx]
-		Y <- x[, vary]
-		
+		if(pca.plotarrow){
+			# Information to plot arrows (loadings) LOADINGS ARROWS
+			if(is.null(rownames(pca$loadings))){
+				rownames(pca$loadings) <- 1:nrow(pca$loadings)
+			}
+			#browser()
+			dataphi <- data.frame(obsnames = row.names(pca$scores), pca$scores)
+			datapc <- data.frame(varnames = rownames(pca$loadings), pca$loadings)
+			  mult <- min(
+			    (max(dataphi[, "PC2"]) - min(dataphi[, "PC2"]) / (max(datapc[, "PC2"]) - min(datapc[, "PC2"]))),
+			    (max(dataphi[, "PC1"]) - min(dataphi[, "PC1"]) / (max(datapc[, "PC1"]) - min(datapc[, "PC1"])))
+			  )
+			datapc <- transform(datapc, v1 = .5 * mult * (get("PC1")), v2 = .5 * mult * (get("PC2")))
+		}
 	}
-
+	nbplots <- 1
 	if(colouring == "features"){
 		mycols <- c("#5289C7", "#7BAFDE", "#4EB265", "#90C987", "#CAE0AB", "#F7EE55", "#F6C141", "#F1932D", "#E8601C")
-		nfeatures <- ncol(x)
-		listplots <- vector("list", nfeatures)
-		for(j in seq(nfeatures)){
-			print(j)
-			d <- data.frame(X, Y, value = x[, j])
-			listplots[[j]] <- ggplot(data = d, mapping = aes(x = X, y = Y)) +
-	     		geom_point(aes(colour = value), shape = 19) +
-	     		ggtitle(colnames(x)[j]) +
-	     		theme(text = element_text(size = 15)) +
-	     		scale_colour_gradientn(colours = mycols) +
-	     		xlab(xlabel) +
-				ylab(ylabel) 
-			
-			if(dimred %in% c("PCA", "robPCA") && plot.arrow){
-				listplots[[j]] <- listplots[[j]] + geom_segment(data = datapc, aes(x = 0, y = 0, xend = v1, yend = v2), arrow = arrow(length = unit(1/2, 'picas')), color = "red") +
-					geom_text(data = datapc, aes(label = varnames, x = 1.4 * v1, y = 1.4 * v2), color = 'darkred', size = 3)
-			}
-
-		}
-	}else{
-		
-		if(colouring == "clustering"){
-			
-			res <- kmeans(x, centers = k)
-			colours <- res$cluster
-			maintitle <- "Clustering-based (in feature space) colouring"
-		}
-		
-		d <- data.frame(X, Y, value = factor(colours))
-		listplots <- ggplot(data = d, mapping = aes(x = X, y = Y)) +
-			geom_point(aes(colour = value), shape = 19) +
-			ggtitle(maintitle) +
-		 	xlab(xlabel) +
-			ylab(ylabel) 
-			#+theme(legend.text=element_text(size=2))
-			
-		if(dimred %in% c("PCA", "robPCA") && plot.arrow){
-				listplots <- listplots + geom_segment(data = datapc, aes(x = 0, y = 0, xend = v1, yend = v2), arrow = arrow(length = unit(1/2, 'picas')), color = "red") +
-					geom_text(data = datapc, aes(label = varnames, x = 1.4 * v1, y = 1.4 * v2), color = 'darkred', size = 3)
-		}
-		listplots <- list(listplots)
-		
+		nbplots <- nfeatures <- ncol(obj$DT)
+	}else if(colouring == "clustering"){
+		res <- kmeans(obj$DT, centers = k)
+		colours <- res$cluster
 	}
+	listplots <- vector("list", nbplots)
+	
 
+				
+	for(j in seq(nbplots)){
+		
+		if(colouring == "features"){
+			myvalue <- obj$DT[, j]
+			maintitle <- colnames(obj$DT)[j]
+			myshapes <- rep(19, length(myvalue))
+		}else if(colouring == "clustering"){
+			myvalue <- factor(colours)
+			maintitle <- "Clustering-based (in feature space) colouring"
+			myshapes <- c(rep(19, length(myvalue)), rep(2, k))
+		}else if(colouring == "custom"){
+			myvalue <- colours
+			maintitle <- "Custom"
+		}
+		print(j)
+		d <- data.frame(x = obj$reducedDT[, 1], y = obj$reducedDT[, 2], value = myvalue)
+		
+#		if(colouring == "clustering"){
+#			infocenters <- cbind(res$centers %*%  pca$rotation[, 1:2], value = as.numeric(names(table(colours))))
+#			colnames(infocenters) <- c("x", "y", "value")
+#			d <- rbind(d, infocenters)
+#		}
+#		d <- data.frame(d, myshapes = factor(myshapes))
+
+		listplots[[j]] <- ggplot(data = d, mapping = aes(x = x, y = y)) +
+     		geom_point(aes(colour = value), shape = 19, cex = 1) +
+     		#geom_point(aes(colour = value, shape = myshapes)) +
+     		ggtitle(maintitle) +
+     		xlab(xlabel) +
+			ylab(ylabel) + 
+			theme(text = element_text(size = 15))
+						
+		if(colouring == "features"){
+			listplots[[j]] <- listplots[[j]] + scale_colour_gradientn(colours = mycols)
+		}
+		
+		if(is.pca && pca.plotarrow){
+			listplots[[j]] <- listplots[[j]] + 
+			geom_segment(data = datapc, aes(x = 0, y = 0, xend = v1, yend = v2), arrow = arrow(length = unit(1/2, 'picas')), color = "red") +
+			geom_text(data = datapc, aes(label = varnames, x = 1.4 * v1, y = 1.4 * v2), color = 'darkred', size = 3)
+		}
+	}
 	return(listplots)
 }
+
