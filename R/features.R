@@ -199,3 +199,8 @@ KLscore <- function(x, window, threshold = dnorm(38)) {
   maxidx <- which.max(diffkl) + 1
   return(list(score = max(diffkl), change.idx = maxidx))
 }
+
+# Count missing values
+CountNAs <- function(x) {
+  return(sum(is.na(x)))
+}
