@@ -29,17 +29,21 @@ Trim <- function(x, trim = 0.1) {
 	return(x)
 }
 
-# Lumpiness
-# cannot be used for yearly data --> Why?
+# Lumpiness and stationarity using sliding windows
+# cannot be used for yearly data --> Why? --> can be used for yearly data
 Lump <- function(x, width) {
 	nr <- length(x)
 	lo <- seq(1, nr, by = width)
 	up <- seq(width, nr + width, by = width)
 	nsegs <- nr/width
+  # Lumpiness
 	varx <- sapply(1:nsegs, function(idx)
                  var(x[lo[idx]:up[idx]], na.rm = TRUE))
 	lumpiness <- var(varx, na.rm = TRUE)
-	return(lumpiness)
+  # Degree of stationary
+  meanx <- sapply(1:nsegs, function(idx) mean(x[lo[idx]:up[idx]], na.rm = TRUE))
+  stationary <- var(meanx, na.rm = TRUE)
+	return(list(lumpiness = lumpiness, stationary = stationary))
 }
 
 # Spectral entroy (using spectral_entropy from ForeCA package)
@@ -198,4 +202,9 @@ KLscore <- function(x, window, threshold = dnorm(38)) {
   diffkl <- diff(kl, na.rm = TRUE)
   maxidx <- which.max(diffkl) + 1
   return(list(score = max(diffkl), change.idx = maxidx))
+}
+
+# Count missing values
+CountNAs <- function(x) {
+  return(sum(is.na(x)))
 }
