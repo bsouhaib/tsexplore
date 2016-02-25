@@ -69,11 +69,8 @@ reducedim <- function(DT, method = c("PCA", "robPCA", "custom"), variables = NUL
 	return(results)
 }
 
-getplot <- function(obj, colouring = c("features", "clustering", "custom"), colours = NULL, k = NULL, pca.plotarrow = TRUE){
-
-	xlabel <- colnames(obj$reducedDT)[1]
-	ylabel <- colnames(obj$reducedDT)[2]
-	
+getplot <- function(obj, colouring = c("feature", "clustering", "custom"), feature = NULL, k = NULL, colours = NULL, pca.plotarrow = TRUE){
+	match.arg(colouring)
 	is.pca <- grepl("PCA", obj$method)
 
 	if(is.pca){
@@ -97,61 +94,55 @@ getplot <- function(obj, colouring = c("features", "clustering", "custom"), colo
 			  )
 			datapc <- transform(datapc, v1 = .5 * mult * (get("PC1")), v2 = .5 * mult * (get("PC2")))
 		}
+	}else{
+		xlabel <- colnames(obj$reducedDT)[1]
+		ylabel <- colnames(obj$reducedDT)[2]
 	}
-	nbplots <- 1
-	if(colouring == "features"){
-		mycols <- c("#5289C7", "#7BAFDE", "#4EB265", "#90C987", "#CAE0AB", "#F7EE55", "#F6C141", "#F1932D", "#E8601C")
-		nbplots <- nfeatures <- ncol(obj$DT)
-	}else if(colouring == "clustering"){
-		res <- kmeans(obj$DT, centers = k)
-		colours <- res$cluster
-	}
-	listplots <- vector("list", nbplots)
 	
-
-				
-	for(j in seq(nbplots)){
-		
-		if(colouring == "features"){
-			myvalue <- obj$DT[, j]
-			maintitle <- colnames(obj$DT)[j]
-			myshapes <- rep(19, length(myvalue))
-		}else if(colouring == "clustering"){
+	if(colouring == "feature"){
+			mycols <- c("#5289C7", "#7BAFDE", "#4EB265", "#90C987", "#CAE0AB", "#F7EE55", "#F6C141", "#F1932D", "#E8601C")
+			myvalue <- obj$DT[, feature]
+			maintitle <- feature
+			myshapes <- factor(rep(19, length(myvalue)))
+	}else if(colouring == "clustering"){
+			res <- kmeans(obj$DT, centers = k)
+			colours <- res$cluster
 			myvalue <- factor(colours)
-			maintitle <- "Clustering-based (in feature space) colouring"
-			myshapes <- c(rep(19, length(myvalue)), rep(2, k))
-		}else if(colouring == "custom"){
+			maintitle <- "Colours based on clustering (in feature space)"
+			myshapes <- factor(c(rep(19, length(myvalue)), rep(0, k)))
+	}else if(colouring == "custom"){
 			myvalue <- colours
 			maintitle <- "Custom"
-		}
-		print(j)
-		d <- data.frame(x = obj$reducedDT[, 1], y = obj$reducedDT[, 2], value = myvalue)
-		
-#		if(colouring == "clustering"){
-#			infocenters <- cbind(res$centers %*%  pca$rotation[, 1:2], value = as.numeric(names(table(colours))))
-#			colnames(infocenters) <- c("x", "y", "value")
-#			d <- rbind(d, infocenters)
-#		}
-#		d <- data.frame(d, myshapes = factor(myshapes))
+			myshapes <- factor(rep(19, length(myvalue)))
+	}
+	
 
-		listplots[[j]] <- ggplot(data = d, mapping = aes(x = x, y = y)) +
-     		geom_point(aes(colour = value), shape = 19, cex = 1) +
-     		#geom_point(aes(colour = value, shape = myshapes)) +
-     		ggtitle(maintitle) +
-     		xlab(xlabel) +
-			ylab(ylabel) + 
-			theme(text = element_text(size = 15))
-						
-		if(colouring == "features"){
-			listplots[[j]] <- listplots[[j]] + scale_colour_gradientn(colours = mycols)
-		}
-		
-		if(is.pca && pca.plotarrow){
-			listplots[[j]] <- listplots[[j]] + 
+	d <- data.frame(x = obj$reducedDT[, 1], y = obj$reducedDT[, 2], value = myvalue)
+	
+#	if(colouring == "clustering"){
+#		infocenters <- cbind(res$centers %*%  pca$loadings[, 1:2], value = as.numeric(names(table(colours))))
+#		colnames(infocenters) <- c("x", "y", "value")
+#		d <- rbind(d, infocenters)
+#	}
+#	d <- data.frame(d, myshapes = myshapes)
+	
+	myplot <- ggplot(data = d, mapping = aes(x = x, y = y)) +
+    			geom_point(aes(colour = value), cex = 1) +
+    			ggtitle(maintitle) +
+    			xlab(xlabel) +
+				ylab(ylabel) 
+				#+ theme(text = element_text(size = 15))
+					
+	if(colouring == "feature"){
+		myplot <- myplot + scale_colour_gradientn(colours = mycols)
+	}
+	
+	if(is.pca && pca.plotarrow){
+		myplot <- myplot + 
 			geom_segment(data = datapc, aes(x = 0, y = 0, xend = v1, yend = v2), arrow = arrow(length = unit(1/2, 'picas')), color = "red") +
 			geom_text(data = datapc, aes(label = varnames, x = 1.4 * v1, y = 1.4 * v2), color = 'darkred', size = 3)
-		}
 	}
-	return(listplots)
+		
+	return(myplot)
 }
 
