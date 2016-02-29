@@ -1,4 +1,5 @@
 
+#' @export
 tabfeatures <- function(tslist, features = c("entropy", "FoAcf", "trend", "seasonality")){
 	nseries <- length(tslist)
 	scaled_tslist  <- lapply(lapply(lapply(tslist, scale, center = TRUE, scale = TRUE), as.numeric), as.ts)
@@ -32,6 +33,7 @@ tabfeatures <- function(tslist, features = c("entropy", "FoAcf", "trend", "seaso
 	return(mat)	
 }
 
+#' @export
 reducedim <- function(DT, method = c("PCA", "robPCA", "custom"), variables = NULL, retpca = FALSE){
 	match.arg(method)
 	if(is.null(rownames(DT))){
@@ -69,6 +71,7 @@ reducedim <- function(DT, method = c("PCA", "robPCA", "custom"), variables = NUL
 	return(results)
 }
 
+#' @export
 getplot <- function(obj, colouring = c("feature", "clustering", "custom"), feature = NULL, k = NULL, colours = NULL, pca.plotarrow = TRUE){
 	match.arg(colouring)
 	is.pca <- grepl("PCA", obj$method)
