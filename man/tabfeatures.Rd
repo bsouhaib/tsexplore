@@ -18,7 +18,7 @@ A feature matrix.
 \code{tabfeatures} computes the feature matrix from a list of time series
 }
 \examples{
-plot(M4[[1]])
-plot(M4[[1]])
+mylist <- list(sunspot.year)
+tabfeatures(mylist)
 }
 
