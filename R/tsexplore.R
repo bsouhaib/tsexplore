@@ -6,6 +6,6 @@
 #' @docType package
 #' @name tsexplore
 #' @importFrom graphics lines plot title
-#' @importFrom stats frequency ts tsp ggplot
+#' @importFrom stats frequency ts tsp ggplot2
 NULL
 #> NULL
