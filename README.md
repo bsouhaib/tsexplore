@@ -1,7 +1,7 @@
 # tsexplore
 [![Pending Pull-Requests](http://githubbadges.herokuapp.com/bsouhaib/tsexplore/pulls.svg?style=flat)](https://github.com/bsouhaib/tsfeatures/pulls)
 
-The R package *tsfeatures* provides methods for extracting various features from time series data.
+The R package *tsexplore* provides methods for extracting various features from time series data.
 
 # Installation
 The **stable** version on R CRAN is coming soon.
@@ -11,15 +11,14 @@ You can install the **development** version from [Github](https://github.com/bso
 ```s
 # install.packages("devtools")
 library(devtools)
-install_github("bsouhaib/tsfeatures") 
+install_github("bsouhaib/tsexplore") 
 ```
 
 # Usage (still in development)
 
 ```s
-#library(tsfeatures)
+#library(tsexplore)
 
-load_all("tsfeatures")
 ######## MAIN YAHOO ########
 yahoo_DT <- c("dat0", "dat1", "dat2", "dat3", "dat4", "dat5")
 data(list = yahoo_DT, package = "anomalous")
