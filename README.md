@@ -1,7 +1,7 @@
 # tsexplore
 [![Pending Pull-Requests](http://githubbadges.herokuapp.com/bsouhaib/tsexplore/pulls.svg?style=flat)](https://github.com/bsouhaib/tsfeatures/pulls)
 
-The R package *tsexplore* provides methods for extracting various features from time series data.
+The R package *tsexplore* provides methods for extracting and visualize various features from big time series data.
 
 # Installation
 The **stable** version on R CRAN is coming soon.
