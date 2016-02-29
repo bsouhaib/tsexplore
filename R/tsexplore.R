@@ -7,5 +7,6 @@
 #' @name tsexplore
 #' @importFrom graphics lines plot title
 #' @importFrom stats frequency ts tsp ggplot2
+#' @importFrom ggplot2 ggplot
 NULL
 #> NULL
