@@ -7,12 +7,15 @@ Authors@R: c(
     person("Rob", "Hyndman", email = "Rob.Hyndman@monash.edu", role = "aut"),
     person("Di", "Cook", email = "dicook@monash.edu", role = "aut"))
 Description: Methods for extracting various features from time series data.
-Depends: R (>= 3.2.3)
-Imports: ForeCA,
-	ggplot2,
-	mgcv,
-	RcppRoll (>= 0.2.2)
+Depends:
+    R (>= 3.2.3)
+Imports:
+    ForeCA,
+    ggplot2,
+    mgcv,
+    RcppRoll (>= 0.2.2)
 License: GPL (>= 2)
 LazyData: true
 URL: https://github.com/bsouhaib/tsexplore
 BugReports: https://github.com/bsouhaib/tsexplore/issues
+RoxygenNote: 5.0.1
