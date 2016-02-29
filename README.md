@@ -1,5 +1,5 @@
-# tsfeatures
-[![Pending Pull-Requests](http://githubbadges.herokuapp.com/bsouhaib/M4comp/pulls.svg?style=flat)](https://github.com/bsouhaib/tsfeatures/pulls)
+# tsexplore
+[![Pending Pull-Requests](http://githubbadges.herokuapp.com/bsouhaib/tsexplore/pulls.svg?style=flat)](https://github.com/bsouhaib/tsfeatures/pulls)
 
 The R package *tsfeatures* provides methods for extracting various features from time series data.
 
