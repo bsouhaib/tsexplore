@@ -4,7 +4,7 @@
 #' 
 #'
 #' @docType package
-#' @name tsfeatures
+#' @name tsexplore
 #' @importFrom graphics lines plot title
 #' @importFrom stats frequency ts tsp
 NULL
