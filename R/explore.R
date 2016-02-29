@@ -1,5 +1,13 @@
 
-#' Compute the feature matrix from a list of time series
+#' Feature matrix from a list of time series
+#'
+#' \code{tabfeatures} computes the feature matrix from a list of time series
+#' @param tslist a list of time series
+#' @param features a vector of features to compute
+#' @return A feature matrix.
+#' @examples
+#' plot(M4[[1]])
+#' plot(M4[[1]])
 #' @export
 tabfeatures <- function(tslist, features = c("entropy", "FoAcf", "trend", "seasonality")){
 	nseries <- length(tslist)
