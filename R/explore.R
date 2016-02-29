@@ -6,8 +6,8 @@
 #' @param features a vector of features to compute
 #' @return A feature matrix.
 #' @examples
-#' plot(M4[[1]])
-#' plot(M4[[1]])
+#' mylist <- list(sunspot.year)
+#' tabfeatures(mylist)
 #' @export
 tabfeatures <- function(tslist, features = c("entropy", "FoAcf", "trend", "seasonality")){
 	nseries <- length(tslist)
