@@ -14,5 +14,5 @@ Imports: ForeCA,
 	RcppRoll (>= 0.2.2)
 License: GPL (>= 2)
 LazyData: true
-URL: https://github.com/bsouhaib/tsfeatures
-BugReports: https://github.com/bsouhaib/tsfeatures/issues
+URL: https://github.com/bsouhaib/tsexplore
+BugReports: https://github.com/bsouhaib/tsexplore/issues
