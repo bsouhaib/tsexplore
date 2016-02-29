@@ -1,5 +1,5 @@
-Package: tsfeatures
-Title: Time Series Feature Extraction
+Package: tsexplore
+Title: Time Series Feature Extraction and Visualization
 Version: 0.0.1
 Authors@R: c(
     person("Souhaib", "Ben Taieb", email = "souhaib.bentaieb@monash.edu", role = c("aut", "cre")),
