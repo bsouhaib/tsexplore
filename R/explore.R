@@ -1,4 +1,5 @@
 
+#' Compute the feature matrix from a list of time series
 #' @export
 tabfeatures <- function(tslist, features = c("entropy", "FoAcf", "trend", "seasonality")){
 	nseries <- length(tslist)
@@ -33,6 +34,7 @@ tabfeatures <- function(tslist, features = c("entropy", "FoAcf", "trend", "seaso
 	return(mat)	
 }
 
+#' Reduce the dimensionality of the feature matrix. Multiple methods are available.
 #' @export
 reducedim <- function(DT, method = c("PCA", "robPCA", "custom"), variables = NULL, retpca = FALSE){
 	match.arg(method)
@@ -71,6 +73,7 @@ reducedim <- function(DT, method = c("PCA", "robPCA", "custom"), variables = NUL
 	return(results)
 }
 
+#' Build a ggplot from the reduced feature matrix
 #' @export
 getplot <- function(obj, colouring = c("feature", "clustering", "custom"), feature = NULL, k = NULL, colours = NULL, pca.plotarrow = TRUE){
 	match.arg(colouring)
