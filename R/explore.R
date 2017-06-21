@@ -34,7 +34,7 @@ tabfeatures <- function(tslist, features = c("entropy", "FoAcf", "trend", "seaso
         		entropy = sapply(tslist, Entropy),
          		FoAcf  = sapply(tslist, FoAcf),
          		trend = sapply(varts_list, function(x) ifelse("trend" %in% names(x), x$trend, 0)),
-         		seasonality = sapply(varts_list, function(x)  ifelse("trend" %in% names(x), x$season, 0) ),
+         		seasonality = sapply(varts_list, function(x)  ifelse("season" %in% names(x), x$season, 0) ),
          		stop("Enter something that switches me!")
          		)
 	})
