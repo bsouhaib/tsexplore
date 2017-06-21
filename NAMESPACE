@@ -2,7 +2,9 @@
 
 export(getplot)
 export(reducedim)
+export(runExample)
 export(tabfeatures)
+importFrom(ggplot2,aes)
 importFrom(ggplot2,ggplot)
 importFrom(graphics,lines)
 importFrom(graphics,plot)

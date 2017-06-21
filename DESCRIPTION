@@ -5,7 +5,7 @@ Authors@R: c(
     person("Souhaib", "Ben Taieb", email = "souhaib.bentaieb@monash.edu", role = c("aut", "cre")),
     person("Earo", "Wang", email = "earo.wang@gmail.com", role = "aut"),
     person("Rob", "Hyndman", email = "Rob.Hyndman@monash.edu", role = "aut"),
-    person("Di", "Cook", email = "dicook@monash.edu", role = "aut"))
+    person("Di", "Cook", email = "dicook@monash.edu", role = "ctb"))
 Description: Methods for extracting various features from time series data.
 Depends:
     R (>= 3.2.3)
@@ -13,7 +13,11 @@ Imports:
     ForeCA,
     ggplot2,
     mgcv,
-    RcppRoll (>= 0.2.2)
+    RcppRoll (>= 0.2.2),
+    shiny,
+    plotly,
+    ggplot2,
+    M4comp
 License: GPL (>= 2)
 LazyData: true
 URL: https://github.com/bsouhaib/tsexplore
